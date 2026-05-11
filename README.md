@@ -4,8 +4,6 @@
 
 When an AI writes your code, *you* are still the one shipping it. This kit gives you four named checks, a scoring rubric, and copy-paste prompts to catch the security gaps AI coding tools systematically miss — in 30 minutes, before you deploy.
 
-📖 Companion to the Substack post: **[5,000 Apps. 2,000 Leaks. One Pattern.](https://abhinavchittora.substack.com)** *(link to be updated once published)*
-
 ---
 
 ## Why this exists
