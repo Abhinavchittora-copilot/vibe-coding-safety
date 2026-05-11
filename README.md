@@ -37,7 +37,7 @@ If you're using AI to ship things that touch user data, this kit is for you.
 | **[checklist.md](./checklist.md)** | The full **30-Minute Anti-Vibe Checklist** — 4 named checks, expanded with what to look for, why it matters, and how to fix it. |
 | **[scoring.md](./scoring.md)** | The **Self-Audit Scoring Rubric** — score your app 0–10. Tells you whether it's safe to ship, needs work, or should not deploy. |
 | **[examples/happy-path-trap.md](./examples/happy-path-trap.md)** | The *"every user can see every other user's data"* failure mode (the Lovable pattern). |
-| **[examples/exposed-secrets.md](./examples/exposed-secrets.md)** | The *"database password is in the page source"* failure mode (the Moltbook pattern). |
+| **[examples/exposed-secrets.md](./examples/exposed-secrets.md)** | The *"database password is in the page source"* failure mode (the leaked-tokens pattern). |
 | **[examples/platform-id-reuse.md](./examples/platform-id-reuse.md)** | The *"the apartment number is also the key"* failure mode (the Base44 pattern). |
 
 ### Agent-facing (install these in your AI tool)

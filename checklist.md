@@ -37,7 +37,7 @@ See [prompts/guardrails-prompt-template.md](./prompts/guardrails-prompt-template
 
 ## Check 2: The Right-Click Test — 5 minutes
 
-> **The principle:** If a password, API key, or access token is anywhere in your client-side code, it is public. The Moltbook social network leaked 1.5 million tokens this way.
+> **The principle:** If a password, API key, or access token is anywhere in your client-side code, it is public. One vibe-coded social network leaked 1.5 million database access tokens this way.
 
 ### How to run it
 
@@ -161,7 +161,7 @@ Remove the suspicious dependency immediately. Replace with a verified equivalent
 | # | Check | Time | What it catches |
 |---|---|---|---|
 | 1 | **Guardrails Prompt** | 5 min | Missing security constraints in your prompts. |
-| 2 | **Right-Click Test** | 5 min | Secrets in client-side code (the Moltbook pattern). |
+| 2 | **Right-Click Test** | 5 min | Secrets in client-side code (the leaked-tokens pattern). |
 | 3 | **Negative Test** | 10 min | Broken auth, BOLA, missing input validation (the Lovable & Base44 pattern). |
 | 4 | **Hallucination Audit** | 10 min | Malicious dependencies the AI invented. |
 | | **Total** | **30 min** | |
