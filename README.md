@@ -30,15 +30,70 @@ If you're using AI to ship things that touch user data, this kit is for you.
 
 ## What's inside
 
+### Human-facing (run these yourself)
+
 | File | What it is |
 |---|---|
 | **[checklist.md](./checklist.md)** | The full **30-Minute Anti-Vibe Checklist** — 4 named checks, expanded with what to look for, why it matters, and how to fix it. |
 | **[scoring.md](./scoring.md)** | The **Self-Audit Scoring Rubric** — score your app 0–10. Tells you whether it's safe to ship, needs work, or should not deploy. |
-| **[prompts/guardrails-prompt-template.md](./prompts/guardrails-prompt-template.md)** | A copy-paste prompt prefix that forces the AI to ask security questions *before* writing code. |
-| **[prompts/secure-by-default-prompt.md](./prompts/secure-by-default-prompt.md)** | A system-level prompt that biases your AI tool toward secure defaults across every prompt in a session. |
-| **[examples/happy-path-trap.md](./examples/happy-path-trap.md)** | A real-world walkthrough of the *"every user can see every other user's data"* failure mode (the Lovable pattern). |
-| **[examples/exposed-secrets.md](./examples/exposed-secrets.md)** | A real-world walkthrough of the *"database password is in the page source"* failure mode (the Moltbook pattern). |
-| **[examples/platform-id-reuse.md](./examples/platform-id-reuse.md)** | A real-world walkthrough of the *"the apartment number is also the key"* failure mode (the Base44 pattern). |
+| **[examples/happy-path-trap.md](./examples/happy-path-trap.md)** | The *"every user can see every other user's data"* failure mode (the Lovable pattern). |
+| **[examples/exposed-secrets.md](./examples/exposed-secrets.md)** | The *"database password is in the page source"* failure mode (the Moltbook pattern). |
+| **[examples/platform-id-reuse.md](./examples/platform-id-reuse.md)** | The *"the apartment number is also the key"* failure mode (the Base44 pattern). |
+
+### Agent-facing (install these in your AI tool)
+
+| File | Where it goes | What it does |
+|---|---|---|
+| **[AGENTS.md](./AGENTS.md)** | Root of any project | Universal agent-instruction file. Cursor, Continue, OpenAI Codex CLI, Aider, and others read it automatically. |
+| **[.cursor/rules/security.mdc](./.cursor/rules/security.mdc)** | `.cursor/rules/` in your project | Cursor-specific project rules. Always applied to every AI response. |
+| **[templates/CLAUDE.md](./templates/CLAUDE.md)** | Root of any project | Claude Code reads this automatically at every session start. |
+| **[prompts/guardrails-prompt-template.md](./prompts/guardrails-prompt-template.md)** | Paste as first user message | Per-build constraints — forces the agent to apply 7 named security rules to the specific feature. |
+| **[prompts/secure-by-default-prompt.md](./prompts/secure-by-default-prompt.md)** | System prompt in any tool | Tool-agnostic version of the agent rules, for tools that don't have a standard rules file. |
+| **[prompts/self-audit-prompt.md](./prompts/self-audit-prompt.md)** | Paste after code generation | Tells the agent to grade its own work against the checklist before you accept it. |
+
+### Automation
+
+| File | What it does |
+|---|---|
+| **[scripts/quick-audit.sh](./scripts/quick-audit.sh)** | Bash script that runs the *mechanical* parts of the checklist: scans for committed secrets, verifies declared dependencies exist on the npm registry, flags known insecure patterns. Run before every deploy. |
+
+---
+
+## How to install this in your AI coding agent
+
+This is the highest-leverage thing you can do with this kit. **Five minutes of setup gives every prompt in your agent's session a security-aware bias by default.**
+
+### Cursor
+
+1. Copy [.cursor/rules/security.mdc](./.cursor/rules/security.mdc) into the same path in your project.
+2. Cursor auto-applies it to every response.
+3. Done. No restart needed.
+
+### Claude Code
+
+1. Copy [templates/CLAUDE.md](./templates/CLAUDE.md) to the root of your project (rename to `CLAUDE.md`).
+2. Claude reads it at the start of every session.
+3. Done.
+
+### Any agent that respects [AGENTS.md](https://agents.md)
+
+Continue, OpenAI Codex CLI, Aider, and a growing list of agents read a root-level `AGENTS.md` file.
+
+1. Copy [AGENTS.md](./AGENTS.md) to the root of your project.
+2. Restart your agent if it caches.
+
+### Any other AI tool (ChatGPT, Claude.ai, Gemini, raw API)
+
+These tools don't have project rules files. Instead:
+
+1. Open [prompts/secure-by-default-prompt.md](./prompts/secure-by-default-prompt.md).
+2. Paste it as the **first message** of every coding session.
+3. Wait for the agent to acknowledge before requesting features.
+4. Re-paste if the conversation gets long — these tools forget after enough turns.
+
+### After every code generation — run the self-audit
+
+Regardless of which tool you use, after the agent generates code, paste [prompts/self-audit-prompt.md](./prompts/self-audit-prompt.md). It forces the agent to grade its own work against the checklist with line citations. This catches ~80% of mistakes before they reach a human reviewer.
 
 ---
 
@@ -70,11 +125,54 @@ There are other vibe-coding security checklists. They're good, and you should re
 - [Replit's vibe coding security checklist](https://docs.replit.com/tutorials/vibe-code-security-checklist) — platform-specific guidance
 - [Invicti's vibe coding security checklist](https://www.invicti.com/blog/web-security/vibe-coding-security-checklist-how-to-secure-ai-generated-apps) — runtime/DAST-focused
 
-This kit is different in three ways:
+This kit is different in four ways:
 
 1. **Time-boxed.** 30 minutes total. Four checks. If it takes longer than that, no one will run it.
 2. **Built for non-engineers.** Plain language, real-world analogies, no jargon.
 3. **Scored, not just listed.** You get a number out of 10. You know exactly whether to ship.
+4. **Agent-installable.** Drop-in files for Cursor, Claude Code, and any agent that supports `AGENTS.md`. Every prompt in your session gets security-aware defaults.
+
+---
+
+## What this kit can and cannot do
+
+Honest framing matters here. Some parts of security automate well. Others don't. This section tells you which is which.
+
+### What the agent files actually deliver
+
+Dropping [AGENTS.md](./AGENTS.md) / [CLAUDE.md](./templates/CLAUDE.md) / [.cursor/rules/security.mdc](./.cursor/rules/security.mdc) into your project will:
+
+- Make your agent default to adding authentication on new endpoints
+- Make your agent derive `userId` from sessions instead of URLs (the #1 BOLA fix)
+- Make your agent refuse to put secrets in client-side code
+- Make your agent add input validation by default
+- Make your agent flag suspicious dependencies
+
+It is *biased prompting at scale*. It is not magic. The agent can still drift in long sessions, especially with smaller models. Re-paste the rules if you notice the agent regressing.
+
+### What still requires a human
+
+Three of the four manual checks in [checklist.md](./checklist.md) cannot be reliably automated:
+
+| Check | Why a human still has to do it |
+|---|---|
+| **The Right-Click Test** | Requires opening the *deployed* app in a browser and inspecting the live page source. Agents inside IDEs don't have that surface. The `scripts/quick-audit.sh` script catches secrets that are in the repo, but not secrets that are only present in the deployed JS bundle. |
+| **The Negative Test** | Requires *intent* — visiting URLs, changing IDs, submitting bad input against the live app. Agents can run `curl`, but interpreting the responses for BOLA is judgment work. |
+| **Authorization audit** | No static tool reliably catches BOLA. The agent's self-audit prompt helps, but a human has to verify the authorization logic still makes sense for the business. |
+
+The scoring rubric exists precisely because *some failures are too critical to leave to automation*. If the manual checklist finds something the agent missed, that gap is the whole point.
+
+### When this kit is not enough
+
+For high-stakes apps — anything handling PCI data, HIPAA-protected data, GDPR-sensitive categories, financial transactions, healthcare records — this kit is the **floor**, not the ceiling. You also need:
+
+- A penetration test before launch
+- DAST scanning in CI
+- A human security review of authorization logic
+- A documented incident response plan
+- Compliance-specific controls beyond what this kit covers
+
+This kit closes the most common gaps in AI-generated apps. It does not make a non-engineer's app production-ready for regulated data. Be honest about which side of that line your app sits on.
 
 ---
 

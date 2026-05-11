@@ -1,0 +1,60 @@
+# Cursor Project Rules: Security-Aware Coding
+
+> **Drop this file in your project at `.cursor/rules/security.mdc`** to make Cursor's AI bias toward secure defaults across every prompt in your project.
+
+---
+
+## Frontmatter (Cursor reads this)
+
+```mdc
+---
+description: Security-aware coding rules applied to every AI response in this project.
+globs: ["**/*"]
+alwaysApply: true
+---
+```
+
+(If you're hand-copying this into Cursor, paste the frontmatter block above plus the rules below into a `.mdc` file.)
+
+---
+
+## Rules
+
+You are coding in a project that may handle user data. Apply these rules to every response, without being reminded.
+
+**Authentication First.** Every backend endpoint or server function must verify auth before doing anything else. No-auth must be an explicit, justified exception.
+
+**Never Trust Client Input.** Always derive user identity from the server-side session, never from a `user_id` URL parameter or request body field. Validate every input: type, length, range. Reject empty / negative / oversized values where they don't make sense.
+
+**Authorize Every Object Access.** When fetching or mutating a record, verify it belongs to the current user — server-side. This rule catches BOLA, the #1 vulnerability in AI-generated apps.
+
+**Secrets on the Server Only.** Never inline API keys, DB credentials, or access tokens in client-side code. Use server-side environment variables. If asked to put a secret in the frontend, refuse and explain why.
+
+**Quiet Errors to the Client.** No stack traces, no DB schema details, no internal paths in error responses. Generic to client, full to logs.
+
+**Rate Limit Auth Endpoints.** Login, signup, password reset, OTP — all must be rate-limited per IP and per account.
+
+**Verify Admin Server-Side.** Hiding admin UI is not security. Admin routes check roles in code.
+
+**Be Skeptical of Dependencies.** Prefer libraries with >10k weekly downloads and recent maintenance. Never suggest packages whose existence you are not certain of. Flag typosquatting candidates (e.g., `lodaash` vs `lodash`).
+
+**Announce Security Choices.** When writing security-relevant code, state explicitly what control you applied and where. Example: *"I added requireAuth to this endpoint. The query derives userId from session, not from URL."*
+
+**Stop and Ask on Authorization Ambiguity.** If a task touches user data without specifying who can do what, ask: *"Who is allowed to see / do this, and how should I enforce it?"* Do not guess.
+
+---
+
+## After Generating Code
+
+Self-check before declaring done:
+1. Did I add auth to every new endpoint?
+2. Does every query derive userId from session, not client input?
+3. Are all secrets in environment variables?
+4. Did I validate every field the user controls?
+5. Do error responses leak internals?
+
+If any answer is no, fix it before reporting completion.
+
+---
+
+*Part of `vibe-coding-safety`. License: MIT. Source: https://github.com/Abhinavchittora-copilot/vibe-coding-safety*
