@@ -16,6 +16,8 @@ The AI is not broken. It is a pattern matcher trained on tutorials that prioriti
 
 This kit is the gap-filler.
 
+> **Read the full investigation:** [5,000 AI-Built Apps Are Leaking Real Data. Here's How To Check Yours.](https://abhinavchittora.substack.com/p/5000-ai-built-apps-are-leaking-real) — the three named platform cases, what each one exposed, and why this pattern keeps repeating.
+
 ---
 
 ## Who this is for
